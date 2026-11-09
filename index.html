@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thesis Memorization Game: AI for Illustration & Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#0a0b0e',
+                        cardbg: '#13161f',
+                        goldaccent: '#f59e0b',
+                        cyanneon: '#06b6d4',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0a0b0e;
+            color: #f8fafc;
+        }
+        .highlight-gold {
+            background-color: rgba(245, 158, 11, 0.25);
+            color: #ffb020;
+            border-bottom: 2px solid #f59e0b;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .glow-box {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.15);
+        }
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0b0e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyanneon selection:text-obsidian">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full border-b border-slate-800 bg-cardbg/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-cyan-500 flex items-center justify-center font-bold text-obsidian shadow-lg text-lg">
+                AI
+            </div>
+            <div>
+                <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-cyan-400 text-lg md:text-xl tracking-tight">
+                    THESIS MEMORIZATION GAME
+                </h1>
+                <p class="text-xs text-slate-400 font-mono">LPU AB Multimedia Arts • Defense Simulation</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <!-- Audio Toggle -->
+            <button id="audioToggleBtn" onclick="toggleAudio()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-400 transition border border-slate-700">
+                <svg id="audioIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                <span id="audioStatusText">Voice: ON</span>
+            </button>
+            
+            <!-- Global Stats (Score & Phase) -->
+            <div class="hidden sm:flex items-center space-x-4 bg-slate-900 px-4 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
+                <div>Score: <span id="headerScore" class="text-amber-400 font-bold">0</span></div>
+                <div class="text-slate-600">|</div>
+                <div>Phase: <span id="headerPhase" class="text-cyan-400 font-bold">Review Mode</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8 flex flex-col items-center justify-center">
+
+        <!-- ================= PHASE 0: LANDING / INTRO ================= -->
+        <div id="viewLanding" class="w-full max-w-3xl bg-cardbg border border-slate-800 rounded-2xl p-8 glow-box text-center space-y-6">
+            <div class="inline-block p-3 rounded-2xl bg-gradient-to-br from-amber-500/10 to-cyan-500/10 border border-amber-500/20 text-amber-400 mb-2">
+                <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                Factors That Influence Students Using AI for Illustration and Design
+            </h2>
+            <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+                Welcome to your ultimate maangas defense trainer! Master the yellow-highlighted core concepts in 30 minutes, then conquer the 15-minute panelist scrambled defense simulation.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left my-6 bg-slate-900/50 p-4 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono">
+                <div class="space-y-2">
+                    <p class="text-amber-400 font-bold">⏱️ Phase 1: 30-Min Study</p>
+                    <p>Review Q&A, Survey scales, and Slide deck with exact yellow highlight mastery.</p>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-cyan-400 font-bold">⚔️ Phase 2: 15-Min Defense</p>
+                    <p>Answer scrambled panelist prompts using <span class="text-white underline">letters and spaces only</span> (No periods allowed!).</p>
+                </div>
+            </div>
+
+            <button onclick="startReviewPhase()" class="w-full md:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian font-extrabold text-base transition shadow-lg shadow-amber-500/20">
+                INITIALIZE MEMORIZATION PROTOCOL 🚀
+            </button>
+        </div>
+
+        <!-- ================= PHASE 1: 30-MINUTE REVIEW & HIGHLIGHTS ================= -->
+        <div id="viewReview" class="w-full max-w-4xl bg-cardbg border border-slate-800 rounded-2xl p-6 md:p-8 glow-gold hidden space-y-6">
+            <!-- Header with Timer -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-mono font-bold border border-amber-500/20">PHASE 1: REVIEW MODE</span>
+                    <h3 class="text-xl font-bold text-white mt-1">Master Yellow Highlighted Keywords</h3>
+                </div>
+                <div class="flex items-center space-x-3 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800">
+                    <div class="text-xs text-slate-400 font-mono">Time Remaining:</div>
+                    <div id="reviewTimerDisplay" class="text-lg font-mono font-bold text-amber-400">30:00</div>
+                    <button onclick="skipReviewToDefense()" class="ml-2 px-3 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-bold border border-cyan-500/30 transition">
+                        Skip to Defense ⚡
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div class="space-y-6 max-h-[55vh] overflow-y-auto pr-2 text-slate-300 text-sm md:text-base leading-relaxed">
+                
+                <!-- Section A -->
+                <div class="p-5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+                    <h4 class="text-amber-400 font-bold text-base flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Part 1: Core Definitions & Variables
+                    </h4>
+                    <p>
+                        Your study examines <span class="highlight-gold">9 key variables</span> affecting the behavioral intention of <span class="highlight-gold">30 LPU Multimedia Arts students</span> to use AI for illustration and design.
+                    </p>
+                    <p>
+                        Key AI tools evaluated: <span class="highlight-gold">ChatGPT</span> for brainstorming and text prompts, <span class="highlight-gold">Google Gemini</span> for creative reasoning and text-to-image, <span class="highlight-gold">Adobe Firefly</span> for commercial-safe professional design and generative fill, and <span class="highlight-gold">Canva AI</span> for final layout creation and posters.
+                    </p>
+                    <p>
+                        Core Finding: <span class="highlight-gold">AI dramatically improves efficiency and productivity</span>, but carries risks like <span class="highlight-gold">overdependence and loss of personal originality</span>. Furthermore, <span class="highlight-gold">24 variables show a statistically significant relationship</span> while <span class="highlight-gold">5 variables show no significant relationship</span>.
+                    </p>
+                </div>
+
+                <!-- Section B -->
+                <div class="p-5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+                    <h4 class="text-amber-400 font-bold text-base flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Part 2: Survey Questionnaire & Themes
+                    </h4>
+                    <p>
+                        Respondent demographics include Student Number <span class="highlight-gold">2021-1-02203</span>, Course <span class="highlight-gold">AB Multimedia Arts</span>. The instrument uses a <span class="highlight-gold">5-point Likert scale</span> (1 = Strongly Disagree to 5 = Strongly Agree) across <span class="highlight-gold">30 statements mapping to 9 major themes</span>.
+                    </p>
+                    <p>
+                        Major themes include <span class="highlight-gold">Perceived Usefulness & Productivity</span>, <span class="highlight-gold">Creativity & Idea Generation</span>, <span class="highlight-gold">Learning, Skills & Confidence</span>, <span class="highlight-gold">Design Assistance & Quality</span>, <span class="highlight-gold">Social Influence</span>, <span class="highlight-gold">Accessibility & Facilitating Conditions</span>, <span class="highlight-gold">Traditional Freehand Design Preference</span>, and <span class="highlight-gold">Ethical Transparent Use</span>.
+                    </p>
+                </div>
+
+                <!-- Section C -->
+                <div class="p-5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+                    <h4 class="text-amber-400 font-bold text-base flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Part 3: Frameworks & Recommendations
+                    </h4>
+                    <p>
+                        Theoretical underpinning relies heavily on the <span class="highlight-gold">Technology Acceptance Model (TAM)</span> focusing on perceived usefulness and ease of use.
+                    </p>
+                    <p>
+                        Ultimate Conclusion: <span class="highlight-gold">Human creativity and critical thinking remain paramount</span>; AI serves as a <span class="highlight-gold">complementary design assistant rather than a replacement</span> for freehand and traditional artistic skills. Recommendations emphasize <span class="highlight-gold">ethics, transparency, and personal originality</span>.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Footer Action -->
+            <div class="pt-4 border-t border-slate-800 flex justify-end">
+                <button onclick="startDefensePhase()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-obsidian font-extrabold text-sm transition shadow-lg shadow-cyan-500/20 flex items-center space-x-2">
+                    <span>I HAVE MEMORIZED THE HIGHLIGHTS • START DEFENSE</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= PHASE 2: 15-MINUTE PANELIST DEFENSE SIMULATION ================= -->
+        <div id="viewDefense" class="w-full max-w-4xl bg-cardbg border border-slate-800 rounded-2xl p-6 md:p-8 glow-box hidden space-y-6">
+            
+            <!-- Defense Header & Timer -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold border border-cyan-500/20">PHASE 2: PANEL DEFENSE SIMULATION</span>
+                    <h3 id="defenseQuestionCounter" class="text-xl font-bold text-white mt-1">Question 1 of 5</h3>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
+                        Score: <span id="defenseScore" class="text-amber-400 font-bold">0</span> pts
+                    </div>
+                    <div class="flex items-center space-x-2 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800">
+                        <div class="text-xs text-slate-400 font-mono">Defense Timer:</div>
+                        <div id="defenseTimerDisplay" class="text-lg font-mono font-bold text-cyan-400">15:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panelist Prompt Box -->
+            <div class="p-6 bg-slate-900 rounded-xl border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs border border-cyan-500/30">
+                            👨‍⚖️
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Panelist Prompt (Scrambled)</p>
+                            <p id="panelistName" class="text-sm font-semibold text-white">Panelist Dr. Santos</p>
+                        </div>
+                    </div>
+                    <button onclick="speakCurrentPrompt()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-semibold transition border border-slate-700 flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                        <span>Replay Audio</span>
+                    </button>
+                </div>
+
+                <div class="p-4 bg-cardbg rounded-lg border border-slate-800/80">
+                    <p id="panelistPromptText" class="text-base md:text-lg text-slate-200 font-medium italic">
+                        "Loading panelist prompt..."
+                    </p>
+                </div>
+            </div>
+
+            <!-- User Input Area -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center text-xs font-mono text-slate-400">
+                    <label for="userAnswerInput" class="font-bold text-slate-300">Your Defense Answer (Spacing & Letters Only):</label>
+                    <span class="text-amber-400">⚠️ NO PERIODS! Letters & spaces only.</span>
+                </div>
+
+                <textarea id="userAnswerInput" rows="3" oninput="handleUserTyping(event)" placeholder="Type your memorized response here using only letters and spaces..." class="w-full bg-slate-900 border border-slate-700 focus:border-cyan-500 rounded-xl p-4 text-white text-sm md:text-base outline-none font-mono resize-none transition shadow-inner"></textarea>
+                
+                <div class="flex items-center justify-between">
+                    <p id="inputErrorMsg" class="text-xs text-rose-400 font-mono hidden">❌ Error: Periods or illegal characters detected! Use spaces and letters only.</p>
+                    <p class="text-xs text-slate-500 font-mono">Tip: Type matching words from your yellow-highlighted study notes.</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                <button onclick="skipCurrentQuestion()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition border border-slate-700">
+                    Skip Question ⏭️
+                </button>
+                <button onclick="submitDefenseAnswer()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian font-extrabold text-sm transition shadow-lg shadow-amber-500/20">
+                    SUBMIT ANSWER 🛡️
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= PHASE 3: RESULTS / SUMMARY SCREEN ================= -->
+        <div id="viewResults" class="w-full max-w-3xl bg-cardbg border border-slate-800 rounded-2xl p-8 glow-box text-center space-y-6 hidden">
+            <div id="resultIconBadge" class="inline-block p-4 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-2">
+                <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+
+            <h2 id="resultTitle" class="text-3xl font-extrabold text-white">Defense Simulation Complete!</h2>
+            <p id="resultSubtitle" class="text-slate-400 text-sm max-w-xl mx-auto">
+                You have successfully navigated the panel defense simulation for your thesis on Artificial Intelligence for Illustration and Design.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <p class="text-xs text-slate-400 font-mono">Final Score</p>
+                    <p id="finalScoreDisplay" class="text-2xl font-extrabold text-amber-400 mt-1">0 pts</p>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <p class="text-xs text-slate-400 font-mono">Accuracy Rating</p>
+                    <p id="finalAccuracyDisplay" class="text-2xl font-extrabold text-cyan-400 mt-1">0%</p>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <p class="text-xs text-slate-400 font-mono">Defense Status</p>
+                    <p id="finalStatusDisplay" class="text-xl font-extrabold text-emerald-400 mt-1">PASSED 🎉</p>
+                </div>
+            </div>
+
+            <div id="resultFeedbackBox" class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 text-left text-xs font-mono text-slate-300 space-y-2">
+                <p class="text-amber-400 font-bold">📋 Panel Feedback Summary:</p>
+                <p id="feedbackDetailText">Great mastery of yellow-highlighted terms! Keep practicing exact phrasing for the actual LPU defense.</p>
+            </div>
+
+            <button onclick="restartGame()" class="px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian font-extrabold text-sm transition shadow-lg shadow-amber-500/20">
+                RESTART DEFENSE TRAINER 🔄
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-800 py-4 text-center text-xs text-slate-500 font-mono">
+        LPU AB Multimedia Arts Thesis Defense Trainer • Maangas Memorization Engine v2.0
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- Game State & Data ---
+        let audioEnabled = true;
+        let currentPhase = 'landing'; // landing, review, defense, results
+        let score = 0;
+        let reviewTimerInterval = null;
+        let defenseTimerInterval = null;
+        let reviewTimeRemaining = 30 * 60; // 30 minutes in seconds
+        let defenseTimeRemaining = 15 * 60; // 15 minutes in seconds
+
+        // Defense Questions Pool (Scrambled & Mapped to Yellow Highlights)
+        const defenseQuestions = [
+            {
+                panelist: "Dr. Santos (Methodology & Scope)",
+                scrambledPrompt: "how many key variables and lpu multimedia arts students are examined in your study concerning ai illustration and design?",
+                targetKeywords: ["9 key variables", "30 lpu multimedia arts students", "ab multimedia arts", "2021 1 02203"],
+                explanation: "Your study examines 9 key variables affecting 30 LPU Multimedia Arts students (Student No: 2021-1-02203)."
+            },
+            {
+                panelist: "Prof. Mendoza (AI Tools Evaluation)",
+                scrambledPrompt: "can you specify the exact roles of chatgpt google gemini adobe firefly and canva ai in your evaluated tools?",
+                targetKeywords: ["chatgpt", "google gemini", "adobe firefly", "canva ai", "brainstorming", "creative reasoning", "commercial safe", "layout creation"],
+                explanation: "ChatGPT is for brainstorming, Gemini for creative reasoning, Firefly for commercial-safe design, and Canva AI for layouts."
+            },
+            {
+                panelist: "Dean Reyes (Statistical Results & Findings)",
+                scrambledPrompt: "what are your core statistical regression findings regarding significant variables versus non significant ones?",
+                targetKeywords: ["24 variables show a statistically significant relationship", "5 variables show no significant relationship", "ai dramatically improves efficiency and productivity"],
+                explanation: "24 variables showed significant relationship while 5 showed no significant relationship; AI dramatically improves efficiency."
+            },
+            {
+                panelist: "Prof. Villanueva (Theoretical Framework)",
+                scrambledPrompt: "what theoretical framework underpins your questionnaire themes rated on a five point likert scale?",
+                targetKeywords: ["technology acceptance model", "tam", "5 point likert scale", "30 statements", "9 major themes"],
+                explanation: "Underpinned by the Technology Acceptance Model (TAM) using a 5-point Likert scale across 30 statements and 9 major themes."
+            },
+            {
+                panelist: "Dr. Gomez (Conclusions & Originality)",
+                scrambledPrompt: "what is your ultimate conclusion regarding personal originality risks and recommendations for students?",
+                targetKeywords: ["human creativity and critical thinking remain paramount", "complementary design assistant", "overdependence and loss of personal originality", "ethics transparency"],
+                explanation: "Human creativity remains paramount; AI is a complementary assistant, but risks include overdependence and loss of originality."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswersCount = 0;
+
+        // --- Speech Synthesis Helper ---
+        function speakText(text) {
+            if (!audioEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel(); // Stop any ongoing speech
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.05;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audioStatusText');
+            const icon = document.getElementById('audioIcon');
+            if (audioEnabled) {
+                btn.textContent = "Voice: ON";
+                speakText("Voice synthesis activated.");
+            } else {
+                btn.textContent = "Voice: OFF";
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        // --- Phase Transitions ---
+        function switchView(viewId) {
+            document.getElementById('viewLanding').classList.add('hidden');
+            document.getElementById('viewReview').classList.add('hidden');
+            document.getElementById('viewDefense').classList.add('hidden');
+            document.getElementById('viewResults').classList.add('hidden');
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        function startReviewPhase() {
+            currentPhase = 'review';
+            document.getElementById('headerPhase').textContent = "Phase 1: 30-Min Study";
+            switchView('viewReview');
+            startReviewTimer();
+            speakText("Phase 1 Review Mode initiated. Study the yellow highlighted keywords carefully. You have 30 minutes.");
+        }
+
+        function skipReviewToDefense() {
+            if (reviewTimerInterval) clearInterval(reviewTimerInterval);
+            startDefensePhase();
+        }
+
+        function startDefensePhase() {
+            if (reviewTimerInterval) clearInterval(reviewTimerInterval);
+            currentPhase = 'defense';
+            document.getElementById('headerPhase').textContent = "Phase 2: Defense Simulation";
+            switchView('viewDefense');
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            updateDefenseUI();
+            startDefenseTimer();
+            speakText("Phase 2 Defense Simulation initialized. Panelist questions are ready. Remember, no periods allowed, use letters and spaces only.");
+        }
+
+        // --- Timers ---
+        function startReviewTimer() {
+            reviewTimeRemaining = 30 * 60;
+            if (reviewTimerInterval) clearInterval(reviewTimerInterval);
+            reviewTimerInterval = setInterval(() => {
+                reviewTimeRemaining--;
+                let mins = Math.floor(reviewTimeRemaining / 60);
+                let secs = reviewTimeRemaining % 60;
+                document.getElementById('reviewTimerDisplay').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (reviewTimeRemaining <= 0) {
+                    clearInterval(reviewTimerInterval);
+                    startDefensePhase();
+                }
+            }, 1000);
+        }
+
+        function startDefenseTimer() {
+            defenseTimeRemaining = 15 * 60;
+            if (defenseTimerInterval) clearInterval(defenseTimerInterval);
+            defenseTimerInterval = setInterval(() => {
+                defenseTimeRemaining--;
+                let mins = Math.floor(defenseTimeRemaining / 60);
+                let secs = defenseTimeRemaining % 60;
+                document.getElementById('defenseTimerDisplay').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (defenseTimeRemaining <= 0) {
+                    clearInterval(defenseTimerInterval);
+                    finishDefenseGame(false);
+                }
+            }, 1000);
+        }
+
+        // --- Defense Simulation Logic ---
+        function updateDefenseUI() {
+            if (currentQuestionIndex >= defenseQuestions.length) {
+                finishDefenseGame(true);
+                return;
+            }
+
+            const q = defenseQuestions[currentQuestionIndex];
+            document.getElementById('defenseQuestionCounter').textContent = `Question ${currentQuestionIndex + 1} of ${defenseQuestions.length}`;
+            document.getElementById('panelistName').textContent = q.panelist;
+            document.getElementById('panelistPromptText').textContent = `"${q.scrambledPrompt}"`;
+            document.getElementById('userAnswerInput').value = '';
+            document.getElementById('inputErrorMsg').classList.add('hidden');
+            document.getElementById('defenseScore').textContent = score;
+            document.getElementById('headerScore').textContent = score;
+
+            // Speak prompt audio
+            speakText(`Panelist prompt from ${q.panelist}: ${q.scrambledPrompt}`);
+        }
+
+        // Rule Check: No periods allowed, only letters and spaces!
+        function handleUserTyping(event) {
+            const inputField = document.getElementById('userAnswerInput');
+            const errorMsg = document.getElementById('inputErrorMsg');
+            const rawVal = inputField.value;
+
+            // Check if input contains periods or illegal characters (allow a-z, A-Z, space, numbers if needed)
+            // User requirement: "hindi kailangan ng period basta space at letters lang"
+            const illegalRegex = /[.,\/#!$%\^&\*;:{}=\-_`~()@?+"]/g;
+            if (illegalRegex.test(rawVal)) {
+                errorMsg.classList.remove('hidden');
+                inputField.classList.add('border-rose-500');
+            } else {
+                errorMsg.classList.add('hidden');
+                inputField.classList.remove('border-rose-500');
+                
+                // Echo typed words if speech is on (optional word-by-word or last word)
+                if (audioEnabled && rawVal.endsWith(' ')) {
+                    const words = rawVal.trim().split(/\s+/);
+                    const lastWord = words[words.length - 1];
+                    if (lastWord.length > 2) {
+                        speakText(lastWord);
+                    }
+                }
+            }
+        }
+
+        function submitDefenseAnswer() {
+            const inputField = document.getElementById('userAnswerInput');
+            const val = inputField.value.trim().toLowerCase();
+            
+            // Validate illegal characters (periods)
+            if (/[.,\/#!$%\^&\*;:{}=\-_`~()@?+"]/g.test(val)) {
+                alertUserBox("Please remove periods or punctuation! Letters and spaces only.");
+                return;
+            }
+
+            if (!val) {
+                alertUserBox("Please type your answer before submitting.");
+                return;
+            }
+
+            const q = defenseQuestions[currentQuestionIndex];
+            
+            // Calculate score matching target keywords
+            let matchedCount = 0;
+            q.targetKeywords.forEach(kw => {
+                if (val.includes(kw.toLowerCase())) {
+                    matchedCount++;
+                }
+            });
+
+            const pointsEarned = matchedCount * 25;
+            if (pointsEarned > 0) {
+                score += pointsEarned;
+                correctAnswersCount++;
+                speakText("Correct answer! Points added.");
+            } else {
+                score -= 10; // Minus points for incorrect/weak keyword match ("lesson learned for actual defense")
+                speakText("Incorrect keyword match. Minus points. Lesson learned for actual defense.");
+            }
+
+            currentQuestionIndex++;
+            updateDefenseUI();
+        }
+
+        function skipCurrentQuestion() {
+            score -= 5;
+            speakText("Question skipped. Moving to next panelist prompt.");
+            currentQuestionIndex++;
+            updateDefenseUI();
+        }
+
+        function alertUserBox(msg) {
+            speakText(msg);
+            alert(msg); // Custom alert replacement handled via standard modal or simple browser alert since alert() is noted, but let's make sure it's clean. Wait, prompt instructions say "Never use alert() and confirm() under any circumstances. Use a message box instead." Let's create an inline notification instead of native alert!
+        }
+
+        // Override alert with inline notification modal
+        function alertUserBox(msg) {
+            speakText(msg);
+            const err = document.getElementById('inputErrorMsg');
+            err.textContent = `⚠️ ${msg}`;
+            err.classList.remove('hidden');
+            setTimeout(() => {
+                err.classList.add('hidden');
+            }, 4000);
+        }
+
+        function finishDefenseGame(completed) {
+            if (defenseTimerInterval) clearInterval(defenseTimerInterval);
+            currentPhase = 'results';
+            switchView('viewResults');
+
+            document.getElementById('finalScoreDisplay').textContent = `${score} pts`;
+            const accuracy = Math.round((correctAnswersCount / defenseQuestions.length) * 100) || 0;
+            document.getElementById('finalAccuracyDisplay').textContent = `${accuracy}%`;
+
+            const statusDisplay = document.getElementById('finalStatusDisplay');
+            const feedbackText = document.getElementById('feedbackDetailText');
+
+            if (score >= 100) {
+                statusDisplay.textContent = "SUMMA DEFENSE PASSED 🔥";
+                statusDisplay.className = "text-xl font-extrabold text-amber-400 mt-1";
+                feedbackText.textContent = `Outstanding maangas defense! You successfully mastered the yellow-highlighted terms with ${accuracy}% accuracy. Ready for LPU!`;
+                speakText("Congratulations! You passed the thesis defense simulation with flying colors.");
+            } else if (score >= 40) {
+                statusDisplay.textContent = "PASSED 👍";
+                statusDisplay.className = "text-xl font-extrabold text-emerald-400 mt-1";
+                feedbackText.textContent = `Good effort! You secured ${score} points. Review your yellow highlights on statistical variables and AI tools for perfection.`;
+                speakText("Good job. Defense simulation passed with moderate accuracy.");
+            } else {
+                statusDisplay.textContent = "NEEDS RE-DEFENSE ⚠️";
+                statusDisplay.className = "text-xl font-extrabold text-rose-400 mt-1";
+                feedbackText.textContent = `Score is too low (${score} pts). Lesson learned for actual defense: re-read your 30-minute yellow highlight study notes!`;
+                speakText("Defense simulation failed. Please review your highlights and try again.");
+            }
+        }
+
+        function restartGame() {
+            score = 0;
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
+            switchView('viewLanding');
+            speakText("Defense trainer restarted. Choose your mode.");
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            switchView('viewLanding');
+        };
+    </script>
+</body>
+</html>
